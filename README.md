@@ -57,6 +57,8 @@ MIT, siehe [LICENSE](LICENSE). BoseBar ist ein privates Projekt und steht in kei
 
 ## Danksagung
 
+Erstellt mit [Claude Code](https://claude.com/claude-code).
+
 Das Protokollwissen stammt aus [bosectl](https://github.com/aaronsb/bosectl) von Aaron Bockelie (MIT-Lizenz):
 
 > MIT License – Copyright (c) 2026 Aaron Bockelie
