@@ -1,15 +1,19 @@
 # BoseBar
 
-Menüleisten-App für macOS, die den Noise-Cancelling-Modus der **Bose QuietComfort Headphones (2023, „prince“, Product-ID 0x4075)** umschaltet. Die App hält eine dauerhafte Bluetooth-Steuerverbindung (BMAP über RFCOMM), dadurch dauert ein Wechsel nur Sekundenbruchteile.
+A small macOS menu bar app that switches the noise cancelling mode of the **Bose QuietComfort Headphones (2023, codename "prince", product ID 0x4075)**. It keeps a persistent Bluetooth control connection (BMAP over RFCOMM), so a mode switch takes a fraction of a second.
 
-- Menüleisten-Icon zeigt den Modus (Quiet / Aware / Custom)
-- Menü: Gerätename, Akku in %, alle Modi zum Anklicken
-- Verbindet sich selbst neu, wenn der Kopfhörer wieder da ist
-- Ohne verbundenen Kopfhörer ist das Icon ausgeblendet; die App läuft unsichtbar weiter. BoseBar erneut starten blendet das Icon wieder ein (z. B. zum Beenden)
+- Menu bar icon reflects the current mode (Quiet / Aware / custom)
+- Menu shows device name, battery level and all modes; click one to switch
+- Reconnects on its own when the headphones come back
+- The icon is hidden while no headphones are connected; the app keeps running in the background. Launch BoseBar again to bring the icon back (for example to quit it)
 
-## Bauen und installieren
+## Tested on one device only
 
-Voraussetzungen: Xcode, `xcodegen` (`brew install xcodegen`).
+BoseBar has been tested with exactly one pair of headphones: Bose QuietComfort Headphones, firmware `1.0.6-80+f5f219b`, on macOS 27. Other units, firmware versions and Bose models are untested and may not work. The app's menu and messages are in German.
+
+## Build and install
+
+Requirements: Xcode and `xcodegen` (`brew install xcodegen`).
 
 ```bash
 xcodegen generate
@@ -23,43 +27,45 @@ xcodebuild -project BoseBar.xcodeproj -scheme BoseBar -configuration Release -de
 cp -R build/Build/Products/Release/BoseBar.app /Applications/
 ```
 
-Beim ersten Start fragt macOS nach der Bluetooth-Berechtigung – erlauben. Die App ist nur ad-hoc signiert; nach einem Neubau kann macOS die Frage erneut stellen.
+On first launch macOS asks for Bluetooth permission; allow it. The app is ad-hoc signed, so macOS may ask again after a rebuild. If you dismissed the prompt, enable BoseBar under System Settings → Privacy & Security → Bluetooth.
 
-## Entwicklung
+## Development
 
 ```bash
 swift test
 ```
 
-Test gegen echte Hardware (in Terminal.app ausführen, Kopfhörer verbunden). Mehrere Befehle laufen über **eine** Verbindung, jeder mit Zeitmessung:
+To test against real hardware, run the command line tool from Terminal.app with the headphones connected. All commands run over **one** connection and each is timed:
 
 ```bash
 swift run bosebar-cli status quiet aware status
 ```
 
-`BMAP_DEBUG=1` davor gibt den kompletten Paketverkehr auf stderr aus.
+Prefix it with `BMAP_DEBUG=1` to print all packet traffic to stderr.
 
-Aufbau:
+Layout:
 
-- `Sources/BMAPKit/` – Protokoll und Bluetooth-Transport, ohne UI
-- `Sources/bosebar-cli/` – kleines Testwerkzeug
-- `App/` – SwiftUI-Menüleisten-App
-- `project.yml` – Vorlage für das Xcode-Projekt (xcodegen)
+- `Sources/BMAPKit/` – protocol and Bluetooth transport, no UI
+- `Sources/bosebar-cli/` – small test tool
+- `App/` – SwiftUI menu bar app
+- `Tools/make-icon.swift` – draws the app icon
+- `project.yml` – input for xcodegen, which generates the Xcode project
 
-## Hinweise
+## Notes
 
-- Läuft gleichzeitig `bosectl` oder die Bose-App auf dem iPhone, kann der Steuerkanal belegt sein. Die App zeigt das im Menü an und versucht es alle 5 Sekunden erneut.
-- Die App schließt immer nur ihren eigenen Steuerkanal, nie die Audio-Verbindung.
+- If `bosectl` or the Bose app on a phone is using the control channel at the same time, it may be busy. The app shows this in its menu and retries every 5 seconds.
+- The app only ever closes its own control channel, never the audio connection.
+- Do not open the RFCOMM channel with `openRFCOMMChannelSync` from Swift async code: it returns early, and closing at that moment leaves an orphaned connection inside `bluetoothd` that blocks the channel for every program until the headphones reconnect. See the comment in `RFCOMMTransport.swift`.
 
-## Lizenz
+## License
 
-MIT, siehe [LICENSE](LICENSE). BoseBar ist ein privates Projekt und steht in keiner Verbindung zur Bose Corporation.
+MIT, see [LICENSE](LICENSE). BoseBar is a private project and is not affiliated with Bose Corporation.
 
-## Danksagung
+## Acknowledgements
 
-Erstellt mit [Claude Code](https://claude.com/claude-code).
+Built with [Claude Code](https://claude.com/claude-code).
 
-Das Protokollwissen stammt aus [bosectl](https://github.com/aaronsb/bosectl) von Aaron Bockelie (MIT-Lizenz):
+The protocol knowledge comes from [bosectl](https://github.com/aaronsb/bosectl) by Aaron Bockelie (MIT License):
 
 > MIT License – Copyright (c) 2026 Aaron Bockelie
 >
