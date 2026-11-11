@@ -7,6 +7,7 @@ A small macOS menu bar app that switches the noise cancelling mode of the **Bose
 - Menu bar icon reflects the current mode (Quiet / Aware / custom)
 - Menu shows device name, battery level and all modes; click one to switch
 - Reconnects on its own when the headphones come back
+- For custom modes: noise cancelling level (0–10) and Wind Block
 - Optional "Beim Login starten" (launch at login) in the menu
 - The icon is hidden while no headphones are connected; the app keeps running in the background. Launch BoseBar again to bring the icon back (for example to quit it)
 
@@ -58,6 +59,7 @@ Layout:
 
 - If `bosectl` or the Bose app on a phone is using the control channel at the same time, it may be busy. The app shows this in its menu and retries every 5 seconds.
 - The app only ever closes its own control channel, never the audio connection.
+- Turning Wind Block on makes the firmware reset the mode's noise cancelling level (observed: raw CNC forced to 0). The level picker is disabled while Wind Block is on.
 - Do not open the RFCOMM channel with `openRFCOMMChannelSync` from Swift async code: it returns early, and closing at that moment leaves an orphaned connection inside `bluetoothd` that blocks the channel for every program until the headphones reconnect. See the comment in `RFCOMMTransport.swift`.
 
 ## License

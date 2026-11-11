@@ -57,6 +57,8 @@ public enum BMAPError: Error, LocalizedError, Equatable {
     /// The headphones answered with an ERROR packet (payload[0] = code).
     case device(code: UInt8)
     case unexpectedReply
+    /// Quiet and Aware are fixed; only custom modes can be changed.
+    case notEditable
 
     public var errorDescription: String? {
         switch self {
@@ -65,6 +67,7 @@ public enum BMAPError: Error, LocalizedError, Equatable {
         case .timeout: "Keine Antwort vom Kopfhörer"
         case .device(let code): "Kopfhörer meldet Fehler \(code)"
         case .unexpectedReply: "Unerwartete Antwort vom Kopfhörer"
+        case .notEditable: "Dieser Modus ist nicht veränderbar"
         }
     }
 }

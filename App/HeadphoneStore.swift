@@ -62,6 +62,28 @@ final class HeadphoneStore {
         }
     }
 
+    /// The active mode, if it is a custom one whose settings can be changed.
+    var editableCurrentMode: ModeConfig? {
+        modes.first { $0.index == currentMode && $0.editable }
+    }
+
+    /// Changes the active custom mode (CNC level, wind block) and writes it to the headphones.
+    func updateCurrentMode(_ change: (inout ModeConfig) -> Void) {
+        guard connected, var mode = editableCurrentMode,
+              let position = modes.firstIndex(where: { $0.index == mode.index }) else { return }
+        change(&mode)
+        modes[position] = mode // show it right away
+        Task {
+            do {
+                modes[position] = try await client.write(mode)
+            } catch {
+                // Rejected: show what the headphones really have. A lost
+                // connection is handled separately through onDisconnect.
+                if let fresh = try? await client.modes() { modes = fresh.filter { !$0.isEmptySlot } }
+            }
+        }
+    }
+
     // MARK: - Connection handling
 
     /// Runs forever: connects when the headphones show up, refreshes the battery while connected.

@@ -32,6 +32,29 @@ struct BoseBarApp: App {
                         set: { _ in store.select(mode.index) }
                     ))
                 }
+                // Settings of the active custom mode. Quiet and Aware are fixed.
+                if let mode = store.editableCurrentMode {
+                    Divider()
+                    // The headphones count the other way round (0 = strongest),
+                    // so the menu shows 10 - raw value as "strength".
+                    Picker(mode.windBlock ? "Geräuschunterdrückung (von Wind Block gesteuert)" : "Geräuschunterdrückung",
+                           selection: Binding(
+                               get: { 10 - Int(mode.cncLevel) },
+                               set: { strength in store.updateCurrentMode { $0.cncLevel = UInt8(10 - strength) } }
+                           )) {
+                        ForEach((0...10).reversed(), id: \.self) { strength in
+                            Text(strength == 10 ? "10 – maximal" : strength == 0 ? "0 – durchlässig" : "\(strength)")
+                                .tag(strength)
+                        }
+                    }
+                    // Measured on the device: with Wind Block on, the firmware
+                    // forces the level to its own value, so choosing one is pointless.
+                    .disabled(mode.windBlock)
+                    Toggle("Wind Block", isOn: Binding(
+                        get: { mode.windBlock },
+                        set: { on in store.updateCurrentMode { $0.windBlock = on } }
+                    ))
+                }
             } else {
                 Text(store.statusText)
             }

@@ -82,6 +82,21 @@ public final class BoseClient {
         guard reply.op == .result || reply.op == .processing else { throw BMAPError.unexpectedReply }
     }
 
+    /// Writes a custom mode back to the headphones, e.g. with a new CNC level or
+    /// wind block setting. Change a copy of a mode from `modes()` and pass it here,
+    /// so name and voice prompt stay as they are. Takes effect at once if the mode is active.
+    /// - Returns: The mode as the headphones confirmed it.
+    @discardableResult
+    public func write(_ mode: ModeConfig) async throws -> ModeConfig {
+        guard mode.editable else { throw BMAPError.notEditable }
+        let packet = BMAPPacket(PrinceDevice.modeConfig.0, PrinceDevice.modeConfig.1, .setGet, mode.setGetPayload)
+        let reply = try await transport.request(packet)
+        // The answer is normally the full 47 byte STATUS of the mode.
+        let confirmed = ModeConfig(statusPayload: reply.payload) ?? mode
+        modeCache[confirmed.index] = confirmed
+        return confirmed
+    }
+
     // MARK: - Internals
 
     private func get(_ address: (UInt8, UInt8)) -> BMAPPacket {
