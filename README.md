@@ -5,6 +5,7 @@ A small macOS menu bar app that switches the noise cancelling mode of the **Bose
 - Menu bar icon reflects the current mode (Quiet / Aware / custom)
 - Menu shows device name, battery level and all modes; click one to switch
 - Reconnects on its own when the headphones come back
+- Optional "Beim Login starten" (launch at login) in the menu
 - The icon is hidden while no headphones are connected; the app keeps running in the background. Launch BoseBar again to bring the icon back (for example to quit it)
 
 ## Tested on one device only

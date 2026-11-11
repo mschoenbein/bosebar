@@ -1,3 +1,4 @@
+import ServiceManagement
 import SwiftUI
 
 /// Launching BoseBar again while it is already running (Spotlight, double click)
@@ -13,6 +14,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct BoseBarApp: App {
     @NSApplicationDelegateAdaptor private var appDelegate: AppDelegate
     @State private var store = HeadphoneStore.shared
+    /// Mirrors the login item state that macOS keeps (System Settings → General → Login Items).
+    @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
 
     var body: some Scene {
         // Reading the value here makes SwiftUI re-run `body` when it changes.
@@ -33,6 +36,19 @@ struct BoseBarApp: App {
                 Text(store.statusText)
             }
             Divider()
+            Toggle("Beim Login starten", isOn: Binding(
+                get: { launchAtLogin },
+                set: { enable in
+                    // macOS stores this itself; we only ask it to add or remove the app.
+                    do {
+                        if enable { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+                    } catch {
+                        print("Login item change failed: \(error.localizedDescription)")
+                    }
+                    // Show what macOS actually did, also if the call failed.
+                    launchAtLogin = SMAppService.mainApp.status == .enabled
+                }
+            ))
             Button("BoseBar beenden") { NSApplication.shared.terminate(nil) }
                 .keyboardShortcut("q")
         } label: {
