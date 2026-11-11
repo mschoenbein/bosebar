@@ -15,7 +15,24 @@ A small macOS menu bar app that switches the noise cancelling mode of the **Bose
 
 BoseBar has been tested with exactly one pair of headphones: Bose QuietComfort Headphones, firmware `1.0.6-80+f5f219b`, on macOS 27. Other units, firmware versions and Bose models are untested and may not work. The app's menu and messages are in German.
 
-## Build and install
+## Download
+
+Get `BoseBar-<version>.dmg` from the [latest release](https://github.com/mschoenbein/bosebar/releases/latest), open it and drag BoseBar into the Applications folder. Requires macOS 14 or later (Apple Silicon or Intel).
+
+**The app is not notarized by Apple**, so macOS blocks the first launch with a warning that it cannot verify the app. To allow it:
+
+1. Try to open BoseBar once and dismiss the warning.
+2. Open System Settings → Privacy & Security, scroll down and click "Open Anyway" next to the BoseBar message.
+
+Or remove the download flag in Terminal:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/BoseBar.app
+```
+
+If you would rather not run an unverified binary, build it yourself:
+
+## Build from source
 
 Requirements: Xcode and `xcodegen` (`brew install xcodegen`).
 
@@ -53,6 +70,7 @@ Layout:
 - `Sources/bosebar-cli/` – small test tool
 - `App/` – SwiftUI menu bar app
 - `Tools/make-icon.swift` – draws the app icon
+- `Tools/release.sh` – builds the release disk image
 - `project.yml` – input for xcodegen, which generates the Xcode project
 
 ## Notes

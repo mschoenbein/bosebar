@@ -17,10 +17,14 @@ targets:
       path: App/Info.plist
       properties:
         LSUIElement: true # menu bar only, no Dock icon
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSBluetoothAlwaysUsageDescription: "BoseBar steuert den Geräuschunterdrückungsmodus deiner Bose-Kopfhörer."
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: local.bosebar.BoseBar
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.mschoenbein.BoseBar
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "6.0"
         CODE_SIGN_IDENTITY: "-" # ad-hoc signing, personal use only
         CODE_SIGN_STYLE: Manual
