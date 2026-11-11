@@ -2,6 +2,8 @@
 
 A small macOS menu bar app that switches the noise cancelling mode of the **Bose QuietComfort Headphones (2023, codename "prince", product ID 0x4075)**. It keeps a persistent Bluetooth control connection (BMAP over RFCOMM), so a mode switch takes a fraction of a second.
 
+> **Unofficial project.** BoseBar is an independent hobby project. It is not affiliated with, endorsed by, or supported by Bose Corporation. "Bose" and "QuietComfort" are trademarks of Bose Corporation and are used here only to say which headphones the app works with. Use at your own risk.
+
 - Menu bar icon reflects the current mode (Quiet / Aware / custom)
 - Menu shows device name, battery level and all modes; click one to switch
 - Reconnects on its own when the headphones come back
@@ -60,7 +62,7 @@ Layout:
 
 ## License
 
-MIT, see [LICENSE](LICENSE). BoseBar is a private project and is not affiliated with Bose Corporation.
+MIT, see [LICENSE](LICENSE).
 
 ## Acknowledgements
 
